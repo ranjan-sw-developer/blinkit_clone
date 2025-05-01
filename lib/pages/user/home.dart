@@ -1,5 +1,9 @@
 import 'package:blink_it_app/constants/color_constants.dart';
+import 'package:blink_it_app/constants/icon_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+import '../../widgets/banner.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -13,13 +17,20 @@ class _HomeScreenState extends State<HomeScreen>
   late TabController _tabController;
   int _selectedIndex = 0;
 
-  final List<Map<String, dynamic>> tabs = [
-    {'label': 'All', 'icon': Icons.all_inbox_outlined},
-    {'label': 'Summer', 'icon': Icons.sunny},
-    {'label': 'Electronics', 'icon': Icons.headphones},
-    {'label': 'Beauty', 'icon': Icons.colorize_sharp},
-    {'label': 'Kids', 'icon': Icons.child_care},
-    {'label': 'Bakery', 'icon': Icons.cake},
+  final List<Map<String, String>> tabs = [
+    {'label': 'All', 'icon': IconPath.all},
+    {'label': 'Summer', 'icon': IconPath.summer},
+    {'label': 'Electronics', 'icon': IconPath.electronics},
+    {'label': 'Beauty', 'icon': IconPath.beauty},
+    {'label': 'Kids', 'icon': IconPath.kids},
+    {'label': 'Premium', 'icon': IconPath.premium},
+  ];
+
+  final List<Map<String, String>> bottomTabs = [
+    {'label': 'Home', 'icon': IconPath.home},
+    {'label': 'Order Again', 'icon': IconPath.order},
+    {'label': 'Categories', 'icon': IconPath.category},
+    {'label': 'Print', 'icon': IconPath.print},
   ];
 
   void _onItemTapped(int index) {
@@ -53,8 +64,8 @@ class _HomeScreenState extends State<HomeScreen>
                   pinned: true,
                   floating: true,
                   expandedHeight: 220.0,
-                  backgroundColor:
-                      ColorConstants.primaryColor, // Primary color for AppBar
+                  backgroundColor: ColorConstants.primaryColor,
+                  // Primary color for AppBar
                   flexibleSpace: FlexibleSpaceBar(
                     background: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 60, 16, 0),
@@ -97,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen>
                               CircleAvatar(
                                 radius: 20,
                                 child: Icon(
-                                  Icons.verified_user,
+                                  Icons.person,
                                 ), // replace with your asset
                               ),
                             ],
@@ -137,7 +148,15 @@ class _HomeScreenState extends State<HomeScreen>
                       tabs:
                           tabs.map((tab) {
                             return Tab(
-                              icon: Icon(tab['icon'], size: 20),
+                              icon: SvgPicture.asset(
+                                tab['icon']!,
+                                width: 24,
+                                height: 24,
+                                colorFilter: ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
                               text: tab['label'],
                             );
                           }).toList(),
@@ -145,36 +164,33 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
               ],
-          body: TabBarView(
-            controller: _tabController,
-            children:
-                tabs.map((tab) {
-                  return Center(child: Text('Content for ${tab['label']}'));
-                }).toList(),
-          ),
+          body: CustomBanner(),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex, // Currently selected tab
-        onTap: _onItemTapped, // Callback when tab is tapped
-        backgroundColor:
-            Colors.red, // Set background color for BottomNavigationBar
-        selectedItemColor:
-            ColorConstants.primaryColor, // Color of the selected item (active)
-        unselectedItemColor: Colors.grey, // Color of the unselected items
-        elevation: 8.0, // Optional: Adds a shadow to the BottomNavigationBar
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.repeat),
-            label: 'Order Again',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category),
-            label: 'Categories',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.print), label: 'Print'),
-        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        backgroundColor: ColorConstants.primaryColor,
+        selectedItemColor: ColorConstants.primaryColor,
+        unselectedItemColor: Colors.black,
+        elevation: 8.0,
+        items: List.generate(bottomTabs.length, (index) {
+          final tab = bottomTabs[index];
+          return BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              tab['icon']!,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                index == _selectedIndex
+                    ? ColorConstants.primaryColor
+                    : Colors.grey, // selected/unselected
+                BlendMode.srcIn,
+              ),
+            ),
+            label: tab['label'],
+          );
+        }),
       ),
     );
   }
